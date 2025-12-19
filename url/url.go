@@ -2,28 +2,29 @@ package url
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
 func GetRedirectURL(initialURL string) (string, error) {
-	client_timeout := &http.Client{
+	client := &http.Client{
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
 	}
 
-	resp, err := client_timeout.Get(initialURL)
+	resp, err := client.Get(initialURL)
 
 	if err != nil {
-		// Note: Use proper error handling in production
-		panic(err)
+		slog.Error("Could not fetch URL", "err", err)
+		os.Exit(1)
 	}
 	defer resp.Body.Close()
 
-	// 3. Check if the response is a redirect
-	// We check against specific redirect status codes (301, 302, 303, 307, 308)
 	var redirectURL string
 
+	// return the redirect URL if status code indicates a redirect
 	switch resp.StatusCode {
 	case http.StatusMovedPermanently, // 301
 		http.StatusFound,             // 302
