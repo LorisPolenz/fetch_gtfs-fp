@@ -12,7 +12,8 @@ func GetRedirectURL(initialURL string) (string, error) {
 		},
 	}
 
-	resp, err := client_timeout.Get("https://data.opentransportdata.swiss/de/dataset/timetable-2025-gtfs2020/permalink")
+	resp, err := client_timeout.Get(initialURL)
+
 	if err != nil {
 		// Note: Use proper error handling in production
 		panic(err)
